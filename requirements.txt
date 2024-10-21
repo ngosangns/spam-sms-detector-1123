@@ -1,0 +1,8 @@
+scikit-learn
+pandas
+imbalanced-learn
+transformers
+transformers[torch]
+datasets
+torch
+matplotlib
