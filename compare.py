@@ -1,6 +1,7 @@
 import os
 import glob
 import pickle
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
@@ -12,6 +13,10 @@ from sklearn.ensemble import RandomForestClassifier as SklearnRandomForestClassi
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import GradientBoostingClassifier as SklearnGradientBoostingClassifier
+from tensorflow.keras.models import Sequential # type: ignore
+from tensorflow.keras.layers import Embedding, SimpleRNN, Dense # type: ignore
+from tensorflow.keras.preprocessing.text import Tokenizer # type: ignore
+from tensorflow.keras.preprocessing.sequence import pad_sequences # type: ignore
 
 class SMSClassifier:
     def __init__(self, model_name):
@@ -134,6 +139,35 @@ class GradientBoostingClassifier(SMSClassifier):
         y_pred = self.model.predict(X_test)
         self.save_results(y_test, y_pred)
 
+class RNNClassifier(SMSClassifier):
+    def __init__(self):
+        super().__init__('rnn')
+        self.tokenizer = Tokenizer(num_words=3000)
+        self.model = self._build_model()
+
+    def _build_model(self):
+        model = Sequential()
+        model.add(Embedding(input_dim=3000, output_dim=128, input_length=100))
+        model.add(SimpleRNN(128))
+        model.add(Dense(1, activation='sigmoid'))
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        return model
+
+    def preprocess_and_vectorize(self, sms_data):
+        self.tokenizer.fit_on_texts(sms_data)
+        sequences = self.tokenizer.texts_to_sequences(sms_data)
+        padded_sequences = pad_sequences(sequences, maxlen=100)
+        return padded_sequences
+
+    def train_model(self, X_train, y_train):
+        y_train = np.array([1 if label == 'spam' else 0 for label in y_train])
+        self.model.fit(X_train, y_train, epochs=5, batch_size=32, validation_split=0.2)
+
+    def evaluate_model(self, X_test, y_test):
+        y_test = np.array([1 if label == 'spam' else 0 for label in y_test])
+        y_pred = (self.model.predict(X_test) > 0.5).astype("int32")
+        self.save_results(y_test, y_pred)
+
 if __name__ == "__main__":
     sms_directory = './sms-data'  # Replace with the actual directory
 
@@ -143,15 +177,22 @@ if __name__ == "__main__":
         RandomForestClassifier(),
         LogisticRegressionClassifier(),
         KNNClassifier(),
-        GradientBoostingClassifier()
+        GradientBoostingClassifier(),
+        RNNClassifier(),
     ]
 
     for classifier in classifiers:
         sms_data, labels = classifier.load_sms_data(sms_directory)
         X_train_data, X_test_data, y_train, y_test = train_test_split(sms_data, labels, test_size=0.2, random_state=42)
-        X_train = classifier.preprocess_and_vectorize(X_train_data)
+        
+        # Fit the vectorizer on the combined training and test data
+        combined_data = X_train_data + X_test_data
+        classifier.vectorizer.fit(combined_data)
+        
+        X_train = classifier.vectorizer.transform(X_train_data)
         X_test = classifier.vectorizer.transform(X_test_data)
         X_train, y_train = classifier.balance_dataset(X_train, y_train)
+
         classifier.train_model(X_train, y_train)
         classifier.evaluate_model(X_test, y_test)
 
@@ -163,7 +204,7 @@ if __name__ == "__main__":
         model_names = list(results.keys())
         accuracies = [results[model]['accuracy'] * 100 for model in model_names]  # Convert to percentage
 
-    plt.figure(figsize=(10, 6))  # Set default window width to 1000 pixels (10 inches)
+    plt.figure(figsize=(12, 6))  # Set default window width to 1000 pixels (10 inches)
     plt.bar(model_names, accuracies)
     plt.xlabel('Model')
     plt.ylabel('Accuracy (%)')

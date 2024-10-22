@@ -6,3 +6,7 @@ transformers[torch]
 datasets
 torch
 matplotlib
+tensorflow
+keras
+tf-keras
+python-dotenv

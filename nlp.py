@@ -46,7 +46,7 @@ def train_nlp_model(train_dataset, val_dataset):
     val_dataset = val_dataset.map(tokenize_function, batched=True)
 
     training_args = TrainingArguments(
-        output_dir='./results',
+        output_dir='./bert-results',
         evaluation_strategy='epoch',
         learning_rate=2e-5,
         per_device_train_batch_size=8,
@@ -63,8 +63,8 @@ def train_nlp_model(train_dataset, val_dataset):
     )
 
     trainer.train()
-    model.save_pretrained('./results')
-    tokenizer.save_pretrained('./results')
+    model.save_pretrained('./bert-results')
+    tokenizer.save_pretrained('./bert-results')
     return model, tokenizer
 
 def evaluate_model(model, tokenizer, test_dataset):
@@ -87,10 +87,10 @@ if __name__ == "__main__":
     train_dataset = preprocess_data(X_train_data, y_train)
     test_dataset = preprocess_data(X_test_data, y_test)
 
-    model, tokenizer = train_nlp_model(train_dataset, test_dataset)
+    # model, tokenizer = train_nlp_model(train_dataset, test_dataset)
 
     # Load the model and tokenizer from the saved directory
-    model = BertForSequenceClassification.from_pretrained('./results')
-    tokenizer = BertTokenizer.from_pretrained('./results')
+    model = BertForSequenceClassification.from_pretrained('./bert-results')
+    tokenizer = BertTokenizer.from_pretrained('./bert-results')
 
     evaluate_model(model, tokenizer, test_dataset)
