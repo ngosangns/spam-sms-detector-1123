@@ -7,7 +7,7 @@
 Create env if not exist:
 
 ```
-python3 -m venv venv
+python3.12 -m venv venv
 ```
 
 Activate ENV:
