@@ -1,3 +1,5 @@
 venv
 ml-models
 .DS_Store
+sms-data-corpus
+__pycache__

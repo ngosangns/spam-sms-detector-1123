@@ -16,6 +16,12 @@ Activate ENV:
 source ./venv/bin/activate
 ```
 
+Start Flask server:
+
+```sh
+flask run
+```
+
 ## Dataset
 
 - https://openscience.vn/chi-tiet-du-lieu/bo-du-lieu-thu-thap-cac-binh-luan-youtube-tin-nhan-sms-tweet-de-phat-hien-spam--291
@@ -23,3 +29,4 @@ source ./venv/bin/activate
 - https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset
 - https://www.kaggle.com/datasets/tapakah68/spam-text-messages-dataset
 - https://www.kaggle.com/search?q=spam+sms+in%3Adatasets
+- https://www.kaggle.com/datasets/rtatman/the-national-university-of-singapore-sms-corpus
