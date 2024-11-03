@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "build": "rspack",
+    "build": "concurrently \"rspack\" \"yarn build-css\"",
     "watch": "rspack --watch",
     "dev": "concurrently \"yarn watch\" \"yarn dev-css\"",
+    "build-css": "postcss src/styles.css -o dist/styles.css -m --verbose",
     "dev-css": "postcss src/styles.css -o dist/styles.css -m -w --verbose"
   },
   "devDependencies": {
