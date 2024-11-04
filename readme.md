@@ -1,4 +1,4 @@
-# SMS Spam Detector
+# Spam SMS & URL Detector
 
 - **Python Version:** 3.12.0
 - **Node Package Manager:** Yarn (install globally with `npm i -g yarn`)
@@ -25,39 +25,15 @@ Install Python packages:
 pip install -r requirements.txt
 ```
 
-## Running the Web Application
-
-### Production Mode
+## Export installed packages versions
 
 ```sh
-cd web
-yarn
-yarn build
-cd ..
-fastapi run app.py
+pip freeze > requirements.txt
 ```
 
-### Development Mode
+## Download data
 
-1. Start the front-end file watcher:
-
-```sh
-cd web
-yarn
-yarn watch
-```
-
-2. Start the back-end server with live reloading:
-
-```sh
-fastapi dev app.py
-```
-
-## Datasets
-
-- https://openscience.vn/chi-tiet-du-lieu/bo-du-lieu-thu-thap-cac-binh-luan-youtube-tin-nhan-sms-tweet-de-phat-hien-spam--291
-- https://www.kaggle.com/datasets/bwandowando/philippine-spam-sms-messages
-- https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset
-- https://www.kaggle.com/datasets/tapakah68/spam-text-messages-dataset
-- https://www.kaggle.com/search?q=spam+sms+in%3Adatasets
-- https://www.kaggle.com/datasets/rtatman/the-national-university-of-singapore-sms-corpus
+1. Download at: https://drive.google.com/file/d/1c0rxN8TnaBAhiMMBboaLZChoqaAwBMr8/view?usp=sharing
+2. Locale the `data.zip` to the root of project.
+3. Unzip: `unzip data.zip`
+4. Zip data (if needed): `zip -r data.zip data`

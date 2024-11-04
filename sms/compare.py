@@ -1,15 +1,15 @@
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
-from models import BERTClassifier
 from models import SVMClassifier
 from models import NaiveBayesClassifier
 from models import RandomForestClassifier
 from models import LogisticRegressionClassifier
 from models import KNNClassifier
 from models import GradientBoostingClassifier
+from models import BERTClassifier
 
 if __name__ == "__main__":
-    SMS_DIR = './sms-data'
+    SMS_DIR = '../data/sms-data'
     RESULT_DIR = './ml-models'
     IS_TRAINING = True
     
