@@ -5,14 +5,15 @@ from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from sms.models import (
+    SMSSVMClassifier,
     # BERTClassifier,
-    SVMClassifier as SMSSVMClassifier,
     # NaiveBayesClassifier,
     # RandomForestClassifier,
     # LogisticRegressionClassifier,
     # KNNClassifier,
     # GradientBoostingClassifier,
 )
+from sms.utils import predict
 from url.models import (
     # BERTClassifier,
     # SVMClassifier,
@@ -29,7 +30,7 @@ RESULT_DIR = os.getenv("RESULT_DIR")
 STATIC_PATH = os.getenv("STATIC_PATH")
 
 sms_model = SMSSVMClassifier(RESULT_DIR)
-sms_model.load_model()
+sms_model.load()
 
 url_model = URLGradientBoostingClassifier(RESULT_DIR)
 url_model.load_model()
@@ -47,7 +48,7 @@ async def classify_sms(request: SMSRequest):
     if not sms:
         raise HTTPException(status_code=400, detail="No SMS provided")
 
-    prediction = sms_model.predict(sms)
+    prediction = predict(sms_model.model, sms)
     sms_type = "spam" if prediction[0] == 1 else "ham"
 
     return JSONResponse(content={"type": sms_type})

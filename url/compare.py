@@ -13,7 +13,7 @@ from models import (
 )
 
 if __name__ == "__main__":
-    CSV_PATH = "../data/url-phishing.csv"
+    CSV_PATH = "../data/url-data.csv"
     RESULT_DIR = "../ml-models"
     IS_TRAINING = True
 

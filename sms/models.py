@@ -1,155 +1,86 @@
-import glob
 import os
 import pickle
 
-import torch
-from imblearn.over_sampling import RandomOverSampler
+import tensorflow as tf
+import keras
+from keras import Sequential, Input, Model
+from keras.src.layers import LSTM, Bidirectional, Dense, Dropout, Embedding, Activation
+from keras.src.losses import BinaryCrossentropy
+from keras.src.optimizers import Adam, RMSprop
 from sklearn.ensemble import (
     GradientBoostingClassifier as SklearnGradientBoostingClassifier,
 )
 from sklearn.ensemble import RandomForestClassifier as SklearnRandomForestClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from transformers import (
-    BertForSequenceClassification,
-    BertTokenizer,
-    TextClassificationPipeline,
-    Trainer,
-    TrainingArguments,
+    TFBertModel,
 )
 
 
 class SMSClassifier:
-    """
-    Lớp SMSClassifier dùng để phân loại tin nhắn SMS thành spam hoặc không spam.
-    Attributes:
-        model_name (str): Tên của mô hình.
-        model_dir (str): Thư mục lưu trữ kết quả.
-        model_path (str): Đường dẫn đến file lưu trữ mô hình.
-        vectorizer (TfidfVectorizer): Bộ vector hóa văn bản sử dụng TF-IDF.
-        model (sklearn model): Mô hình học máy dùng để phân loại.
-    Methods:
-        __init__(model_name, model_dir):
-            Khởi tạo đối tượng SMSClassifier với tên mô hình và thư mục kết quả.
-        load_sms_data(directory):
-            Tải dữ liệu SMS từ thư mục chỉ định và trả về danh sách tin nhắn và nhãn tương ứng.
-        balance_dataset(X_train, y_train):
-            Cân bằng tập dữ liệu huấn luyện bằng cách sử dụng kỹ thuật oversampling.
-        preprocess_data(sms_data, labels):
-            Tiền xử lý dữ liệu SMS và nhãn, bao gồm chia tập dữ liệu và vector hóa văn bản.
-        train_model(X_train, y_train):
-            Huấn luyện mô hình với dữ liệu huấn luyện.
-        evaluate_model(X_test, y_test):
-            Đánh giá mô hình với dữ liệu kiểm tra và trả về nhãn thực tế và nhãn dự đoán.
-        save_model():
-            Lưu mô hình đã huấn luyện vào file.
-        load_model():
-            Tải mô hình từ file.
-    """
-
     def __init__(self, model_name, model_dir):
         self.model_name = model_name
         self.model_dir = model_dir
         self.model_path = os.path.join(
             self.model_dir, f"sms-{self.model_name}-model.pkl"
         )
-        self.vectorizer = TfidfVectorizer(stop_words="english", max_features=3000)
         self.model = None
 
-    def load_sms_data(self, directory):
-        sms_data = []
-        labels = []
-        for file_path in glob.glob(os.path.join(directory, "*.txt")):
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read().strip()
-                lines = content.split("\n")
-                if len(lines) >= 2:
-                    label = lines[0].lower()
-                    sms_content = "\n".join(lines[1:])
-                    sms_data.append(sms_content)
-                    labels.append(1 if label == "spam" else 0)
+    # for SMSLSTMClassifier
+    def build_lstm_model(self, text_vectorization):
+        pass
 
-        return sms_data, labels
+    # for SMSBERTClassifier
+    def build_bert_model(self, max_length):
+        pass
 
-    def balance_dataset(self, X_train, y_train):
-        oversampler = RandomOverSampler(random_state=42)
-        X_resampled, y_resampled = oversampler.fit_resample(X_train, y_train)
-        return X_resampled, y_resampled
+    # for SMSRNNClassifier
+    def build_rnn_model(self, max_sequence_length):
+        pass
 
-    def preprocess_data(self, sms_data, labels):
-        X_train, X_test, y_train, y_test = train_test_split(
-            sms_data, labels, test_size=0.2, random_state=42
-        )
-
-        combined_data = X_train + X_test
-        self.vectorizer.fit(combined_data)
-
-        X_train, y_train = self.balance_dataset(
-            self.vectorizer.transform(X_train), y_train
-        )
-        X_test = self.vectorizer.transform(X_test)
-
-        return X_train, y_train, X_test, y_test
-
-    def train_model(self, X_train, y_train):
-        self.model.fit(X_train, y_train)
-
-    def evaluate_model(self, X_test, y_test):
-        y_pred = self.model.predict(X_test)
-
-        # print(f'Accuracy: {accuracy_score(y_test, y_pred)}')
-        # print(classification_report(y_test, y_pred))
-
-        return y_test, y_pred
-
-    def predict(self, sms_data):
-        X_data = self.vectorizer.transform([sms_data])
-        return self.model.predict(X_data)
-
-    def save_model(self):
+    def save(self):
         with open(self.model_path, "wb") as f:
-            pickle.dump((self.model, self.vectorizer), f)
+            pickle.dump(self.model, f)
 
-    def load_model(self):
+    def load(self):
         with open(self.model_path, "rb") as f:
-            self.model, self.vectorizer = pickle.load(f)
+            self.model = pickle.load(f)
 
 
-class SVMClassifier(SMSClassifier):
+class SMSSVMClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("svm", model_dir)
         self.model = SVC(kernel="linear", C=1.0, random_state=42)
 
 
-class NaiveBayesClassifier(SMSClassifier):
+class SMSNaiveBayesClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("naive_bayes", model_dir)
         self.model = MultinomialNB()
 
 
-class RandomForestClassifier(SMSClassifier):
+class SMSRandomForestClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("random_forest", model_dir)
         self.model = SklearnRandomForestClassifier(n_estimators=100, random_state=42)
 
 
-class LogisticRegressionClassifier(SMSClassifier):
+class SMSLogisticRegressionClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("logistic_regression", model_dir)
         self.model = LogisticRegression(random_state=42)
 
 
-class KNNClassifier(SMSClassifier):
+class SMSKNNClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("knn", model_dir)
         self.model = KNeighborsClassifier(n_neighbors=5)
 
 
-class GradientBoostingClassifier(SMSClassifier):
+class SMSGradientBoostingClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("gradient_boosting", model_dir)
         self.model = SklearnGradientBoostingClassifier(
@@ -157,107 +88,87 @@ class GradientBoostingClassifier(SMSClassifier):
         )
 
 
-class BERTClassifier(SMSClassifier):
-    """
-    BERTClassifier là một lớp con của SMSClassifier, sử dụng mô hình BERT để phân loại tin nhắn SMS.
-
-    Attributes:
-        model_path (str): Đường dẫn lưu trữ mô hình đã huấn luyện.
-        tokenizer (BertTokenizer): Bộ tokenizer của BERT.
-        model (BertForSequenceClassification): Mô hình BERT dùng để phân loại.
-
-    Methods:
-        __init__(model_dir):
-            Khởi tạo BERTClassifier với đường dẫn lưu trữ kết quả.
-
-        balance_dataset(X_train, y_train):
-            Cân bằng tập dữ liệu huấn luyện bằng cách sử dụng kỹ thuật oversampling.
-
-        preprocess_data(sms_data, labels):
-            Tiền xử lý dữ liệu SMS và nhãn, chia thành tập huấn luyện và tập kiểm tra.
-
-        train_model(X_train, X_test):
-            Huấn luyện mô hình BERT với tập dữ liệu huấn luyện và kiểm tra.
-
-        evaluate_model(X_test, y_test):
-            Đánh giá mô hình trên tập dữ liệu kiểm tra và trả về nhãn thực tế và nhãn dự đoán.
-
-        save_model():
-            Lưu trữ mô hình và tokenizer đã huấn luyện vào đường dẫn model_path.
-
-        load_model():
-            Tải mô hình và tokenizer từ đường dẫn model_path.
-    """
-
+class SMSLSTMClassifier(SMSClassifier):
     def __init__(self, model_dir):
-        super().__init__("bert-base-uncased", model_dir)
-        self.model_path = os.path.join(self.model_dir, "sms-bert-base-uncased-model")
-        self.tokenizer = BertTokenizer.from_pretrained(self.model_name)
-        self.model = BertForSequenceClassification.from_pretrained(
-            self.model_name, num_labels=2
+        super().__init__("lstm", model_dir)
+        self.model_path = self.model_path + '.keras'
+
+    def build_lstm_model(self, text_vectorization):
+        self.model = Sequential(
+            [
+                text_vectorization,
+                Embedding(
+                    len(text_vectorization.get_vocabulary()),
+                    64,
+                    mask_zero=True,
+                ),
+                Bidirectional(LSTM(64, return_sequences=True)),
+                Bidirectional(LSTM(32)),
+                Dense(64, activation="relu"),
+                Dropout(0.3),
+                Dense(1),
+            ]
+        )
+        self.model.compile(
+            loss=BinaryCrossentropy(from_logits=True),
+            optimizer=Adam(1e-4),
+            metrics=["accuracy"],
         )
 
-    def balance_dataset(self, X_train, y_train):
-        oversampler = RandomOverSampler(random_state=42)
-        X_resampled, y_resampled = oversampler.fit_resample(
-            [[x] for x in X_train], y_train
-        )
-        X_resampled = [x[0] for x in X_resampled]  # Flatten the resampled X back to 1D
-        return X_resampled, y_resampled
+    def save(self):
+        self.model.save(self.model_path)
 
-    def preprocess_data(self, sms_data, labels):
-        X_train, X_test, y_train, y_test = train_test_split(
-            sms_data, labels, test_size=0.2, random_state=42
-        )
-        X_train, y_train = self.balance_dataset(X_train, y_train)
+    def load(self):
+        self.model = keras.models.load_model(self.model_path)
 
-        return X_train, y_train, X_test, y_test
 
-    def train_model(self, X_train, X_test):
-        training_args = TrainingArguments(
-            output_dir=self.model_path,
-            evaluation_strategy="epoch",
-            learning_rate=2e-5,
-            per_device_train_batch_size=8,
-            per_device_eval_batch_size=8,
-            num_train_epochs=3,
-            weight_decay=0.01,
-        )
-        trainer = Trainer(
-            model=self.model,
-            args=training_args,
-            train_dataset=X_train,
-            eval_dataset=X_test,
-        )
-        trainer.train()
+class SMSBERTClassifier(SMSClassifier):
+    def __init__(self, model_dir):
+        super().__init__("bert", model_dir)
+        self.model: Model
 
-    def evaluate_model(self, X_test, y_test):
-        pipeline = TextClassificationPipeline(
-            model=self.model,
-            tokenizer=self.tokenizer,
-            framework="pt",
-            device=0 if torch.cuda.is_available() else -1,
-        )
-        predictions = pipeline(X_test)
-        y_pred = [pred["label"] == "LABEL_1" for pred in predictions]
+    def build_bert_model(self, max_length):
+        input_ids = tf.keras.Input(shape=(max_length,), dtype='int32')
+        attention_masks = tf.keras.Input(shape=(max_length,), dtype='int32')
 
-        return y_test, y_pred
+        bert_model = TFBertModel.from_pretrained('bert-base-uncased')
+        output = bert_model([input_ids, attention_masks])
+        output = output[1]
+        output = tf.keras.layers.Dense(32, activation='relu')(output)
+        output = tf.keras.layers.Dropout(0.2)(output)
+        output = tf.keras.layers.Dense(1, activation='sigmoid')(output)
 
-    def predict(self, sms_data):
-        pipeline = TextClassificationPipeline(
-            model=self.model,
-            tokenizer=self.tokenizer,
-            framework="pt",
-            device=0 if torch.cuda.is_available() else -1,
-        )
-        predictions = pipeline([sms_data])
-        y_pred = [pred["label"] == "LABEL_1" for pred in predictions]
-        return y_pred  # 0 is safe, 1 is unsafe
+        model = tf.keras.models.Model(inputs=[input_ids, attention_masks], outputs=output)
+        model.compile(tf.keras.optimizers.Adam(lr=1e-5), loss='binary_crossentropy', metrics=['accuracy'])
 
-    def save_model(self):
-        self.model.save_pretrained(self.model_path)
-        self.tokenizer.save_pretrained(self.model_path)
+        self.model = model
 
-    def load_model(self):
-        self.model = BertForSequenceClassification.from_pretrained(self.model_path)
-        self.tokenizer = BertTokenizer.from_pretrained(self.model_path)
+    # def save(self):
+    #     self.model.save_pretrained(self.model_path)
+    #
+    # def load(self):
+    #     self.model = BertForSequenceClassification.from_pretrained(self.model_path)
+
+
+class SMSRNNClassifier(SMSClassifier):
+    def __init__(self, model_dir):
+        super().__init__("rnn", model_dir)
+
+    def build_rnn_model(self, max_sequence_length):
+        inputs = Input(name='inputs', shape=[max_sequence_length])
+        layer = Embedding(1000, 50)(inputs)
+        layer = LSTM(64)(layer)
+        layer = Dense(256, name='FC1')(layer)
+        layer = Activation('relu')(layer)
+        layer = Dropout(0.5)(layer)
+        layer = Dense(1, name='out_layer')(layer)
+        layer = Activation('sigmoid')(layer)
+
+        self.model: Model = Model(inputs=inputs, outputs=layer)
+        self.model.compile(loss='binary_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+
+    # def save(self):
+    #     self.model.save_pretrained(self.model_path)
+    #
+    # def load(self):
+    #     self.model = BertForSequenceClassification.from_pretrained(self.model_path)

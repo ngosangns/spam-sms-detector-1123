@@ -1,14 +1,13 @@
 # Spam SMS & URL Detector
 
-- **Python Version:** 3.12.0
-- **Node Package Manager:** Yarn (install globally with `npm i -g yarn`)
+- python 3.12.7 - pyenv - anaconda3-2024.10-1
 
 ## Environment Setup
 
 Create a virtual environment if it doesn’t already exist:
 
 ```sh
-python3.12 -m venv venv
+python -m venv venv
 ```
 
 Activate the virtual environment:
@@ -28,12 +27,13 @@ pip install -r requirements.txt
 ## Export installed packages versions
 
 ```sh
-pip freeze > requirements.txt
+pip free > requirements.txt
 ```
 
-## Download data
+## Download NLTK assets
 
-1. Download at: https://drive.google.com/file/d/1c0rxN8TnaBAhiMMBboaLZChoqaAwBMr8/view?usp=sharing
-2. Locale the `data.zip` to the root of project.
-3. Unzip: `unzip data.zip`
-4. Zip data (if needed): `zip -r data.zip data`
+```sh
+export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
+python -c "import nltk; nltk.download()"
+```
+
