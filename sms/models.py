@@ -16,6 +16,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from transformers import (
+    BertForSequenceClassification,
     TFBertModel,
 )
 
@@ -91,7 +92,7 @@ class SMSGradientBoostingClassifier(SMSClassifier):
 class SMSLSTMClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("lstm", model_dir)
-        self.model_path = self.model_path + '.keras'
+        self.model_path = self.model_path + ".keras"
 
     def build_lstm_model(self, text_vectorization):
         self.model = Sequential(
@@ -128,18 +129,24 @@ class SMSBERTClassifier(SMSClassifier):
         self.model: Model
 
     def build_bert_model(self, max_length):
-        input_ids = tf.keras.Input(shape=(max_length,), dtype='int32')
-        attention_masks = tf.keras.Input(shape=(max_length,), dtype='int32')
+        input_ids = tf.keras.Input(shape=(max_length,), dtype="int32")
+        attention_masks = tf.keras.Input(shape=(max_length,), dtype="int32")
 
-        bert_model = TFBertModel.from_pretrained('bert-base-uncased')
+        bert_model = TFBertModel.from_pretrained("bert-base-uncased")
         output = bert_model([input_ids, attention_masks])
         output = output[1]
-        output = tf.keras.layers.Dense(32, activation='relu')(output)
+        output = tf.keras.layers.Dense(32, activation="relu")(output)
         output = tf.keras.layers.Dropout(0.2)(output)
-        output = tf.keras.layers.Dense(1, activation='sigmoid')(output)
+        output = tf.keras.layers.Dense(1, activation="sigmoid")(output)
 
-        model = tf.keras.models.Model(inputs=[input_ids, attention_masks], outputs=output)
-        model.compile(tf.keras.optimizers.Adam(lr=1e-5), loss='binary_crossentropy', metrics=['accuracy'])
+        model = tf.keras.models.Model(
+            inputs=[input_ids, attention_masks], outputs=output
+        )
+        model.compile(
+            tf.keras.optimizers.Adam(lr=1e-5),
+            loss="binary_crossentropy",
+            metrics=["accuracy"],
+        )
 
         self.model = model
 
@@ -150,22 +157,38 @@ class SMSBERTClassifier(SMSClassifier):
     #     self.model = BertForSequenceClassification.from_pretrained(self.model_path)
 
 
+class SMSBERT2Classifier(SMSClassifier):
+    def __init__(self, model_dir):
+        super().__init__("bert2", model_dir)
+        self.model = BertForSequenceClassification.from_pretrained(
+            "bert-base-uncased", num_labels=2
+        )
+
+    def save(self):
+        self.model.save_pretrained(self.model_path)
+
+    def load(self):
+        self.model = BertForSequenceClassification.from_pretrained(self.model_path)
+
+
 class SMSRNNClassifier(SMSClassifier):
     def __init__(self, model_dir):
         super().__init__("rnn", model_dir)
 
     def build_rnn_model(self, max_sequence_length):
-        inputs = Input(name='inputs', shape=[max_sequence_length])
+        inputs = Input(name="inputs", shape=[max_sequence_length])
         layer = Embedding(1000, 50)(inputs)
         layer = LSTM(64)(layer)
-        layer = Dense(256, name='FC1')(layer)
-        layer = Activation('relu')(layer)
+        layer = Dense(256, name="FC1")(layer)
+        layer = Activation("relu")(layer)
         layer = Dropout(0.5)(layer)
-        layer = Dense(1, name='out_layer')(layer)
-        layer = Activation('sigmoid')(layer)
+        layer = Dense(1, name="out_layer")(layer)
+        layer = Activation("sigmoid")(layer)
 
         self.model: Model = Model(inputs=inputs, outputs=layer)
-        self.model.compile(loss='binary_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+        self.model.compile(
+            loss="binary_crossentropy", optimizer=RMSprop(), metrics=["accuracy"]
+        )
 
     # def save(self):
     #     self.model.save_pretrained(self.model_path)

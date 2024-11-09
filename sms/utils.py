@@ -9,6 +9,8 @@ from transformers import (
     TextClassificationPipeline,
     PreTrainedModel,
     PreTrainedTokenizerBase,
+    TrainingArguments,
+    Trainer,
 )
 
 
@@ -33,7 +35,7 @@ def load_data(csv_path: str) -> tuple[np.ndarray, np.ndarray]:
     Y: np.ndarray = df.iloc[:, 0].values
     Y = np.array([1 if i == "spam" else 0 for i in Y])
 
-    return X, Y
+    return X, Y, df
 
 
 def train(model, X: np.ndarray, Y: np.ndarray[int]) -> None:
@@ -96,7 +98,7 @@ def balance_dataset(oversampler: BaseOverSampler, X, Y):
 
 def balance_transformed_dataset(
     oversampler: BaseOverSampler, X_transformed, Y
-) -> (np.ndarray, np.ndarray):
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Balance the dataset using the provided oversampler.
 
@@ -177,7 +179,7 @@ def bert_tokenize(X, tokenizer, max_length=64):
 
 
 def bert_train(model: Model, X_input_ids, X_attention_masks, Y):
-    history = model.fit(
+    model.fit(
         [X_input_ids, X_attention_masks],
         Y,
         validation_split=0.2,
@@ -210,6 +212,29 @@ def bert_evaluate(
     Y_pred = pipeline(X)
     Y_pred = np.array([y["label"] == "LABEL_1" for y in Y_pred])
     return Y_pred
+
+
+def bert2_build_trainer(
+    model: Model, model_path: str, X1_bert_tokenized=None, X2_bert_tokenized=None
+):
+    training_args = TrainingArguments(
+        output_dir=model_path,
+        eval_strategy="epoch",
+        learning_rate=2e-5,
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=8,
+        num_train_epochs=3,
+        weight_decay=0.01,
+        remove_unused_columns=False,
+    )
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=X1_bert_tokenized,
+        eval_dataset=X2_bert_tokenized,
+    )
+
+    return trainer
 
 
 def rnn_train(

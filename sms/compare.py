@@ -1,49 +1,48 @@
 import matplotlib.pyplot as plt
+import tensorflow as tf
+from datasets import Dataset
 from imblearn.over_sampling import RandomOverSampler
+from keras.src.layers.preprocessing.text_vectorization import TextVectorization
 from keras.src.legacy.preprocessing.text import Tokenizer
 from keras.src.utils import pad_sequences
+from models import (
+    SMSBERT2Classifier,
+    SMSClassifier,
+    SMSBERTClassifier,
+    SMSGradientBoostingClassifier,
+    SMSKNNClassifier,
+    SMSLogisticRegressionClassifier,
+    SMSLSTMClassifier,
+    SMSNaiveBayesClassifier,
+    SMSRandomForestClassifier,
+    SMSRNNClassifier,
+    SMSSVMClassifier,
+)
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer, PorterStemmer, WordNetLemmatizer
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import accuracy_score
-import tensorflow as tf
-from keras.src.layers.preprocessing.text_vectorization import TextVectorization
 from sklearn.model_selection import train_test_split
 from transformers import (
     BertTokenizer,
 )
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.metrics import accuracy_score
-
-from models import (
-    SMSClassifier,
-    SMSGradientBoostingClassifier,
-    SMSKNNClassifier,
-    SMSLogisticRegressionClassifier,
-    SMSNaiveBayesClassifier,
-    SMSRandomForestClassifier,
-    SMSSVMClassifier,
-    SMSBERTClassifier,
-    SMSLSTMClassifier,
-    SMSRNNClassifier,
-)
 from utils import (
-    load_data,
-    train,
-    evaluate,
-    keras_train,
-    keras_evaluate,
-    balance_dataset,
-    bert_train,
+    bert2_build_trainer,
     bert_evaluate,
-    rnn_train,
     bert_tokenize,
+    bert_train,
+    evaluate,
+    keras_evaluate,
+    keras_train,
+    load_data,
+    rnn_train,
+    train,
 )
 
 if __name__ == "__main__":
     CSV_PATH = "../data/sms-data.csv"
     RESULT_DIR = "../ml-models"
-    IS_TRAINING = True
+    IS_TRAINING = False
 
     random_overSampler = RandomOverSampler(random_state=42)
     stop_words = stopwords.words("english")
@@ -55,6 +54,7 @@ if __name__ == "__main__":
 
     # tokenizer
     count_vectorizer = CountVectorizer(ngram_range=(2, 6), max_features=3000)
+    bert_tokenize_max_length = 64
     bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
     tfidf_vectorizer = TfidfVectorizer(stop_words="english", max_features=3000)
     text_vectorization = TextVectorization(
@@ -65,21 +65,22 @@ if __name__ == "__main__":
     keras_tokenizer = Tokenizer(num_words=1000)
 
     classifiers: list[SMSClassifier] = [
-        SMSSVMClassifier(RESULT_DIR),
-        SMSNaiveBayesClassifier(RESULT_DIR),
-        SMSRandomForestClassifier(RESULT_DIR),
-        SMSLogisticRegressionClassifier(RESULT_DIR),
-        SMSKNNClassifier(RESULT_DIR),
-        SMSGradientBoostingClassifier(RESULT_DIR),
+        # SMSSVMClassifier(RESULT_DIR),
+        # SMSNaiveBayesClassifier(RESULT_DIR),
+        # SMSRandomForestClassifier(RESULT_DIR),
+        # SMSLogisticRegressionClassifier(RESULT_DIR),
+        # SMSKNNClassifier(RESULT_DIR),
+        # SMSGradientBoostingClassifier(RESULT_DIR),
         # SMSLSTMClassifier(RESULT_DIR),
         # SMSBERTClassifier(RESULT_DIR),
+        SMSBERT2Classifier(RESULT_DIR),
         # SMSRNNClassifier(RESULT_DIR),
     ]
     model_names = [classifier.model_name for classifier in classifiers]
     accuracies = []
 
-    X, Y = load_data(CSV_PATH)
-    X, Y = balance_dataset(random_overSampler, X, Y)
+    X, Y, df = load_data(CSV_PATH)
+    # X, Y = balance_dataset(random_overSampler, X, Y)
 
     # for ML
     tfidf_vectorizer.fit(X.copy())
@@ -108,10 +109,22 @@ if __name__ == "__main__":
     )  # Cause "Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence"
 
     # for BERT
-    bert_tokenize_max_length = 64
     X1_input_ids, X1_attention_masks = bert_tokenize(
         X1.copy(), bert_tokenizer, bert_tokenize_max_length
     )
+    X2_input_ids, X2_attention_masks = bert_tokenize(
+        X2.copy(), bert_tokenizer, bert_tokenize_max_length
+    )
+
+    # for BERT2
+    X1_df = Dataset.from_dict({"text": X1, "label": Y1})
+    X2_df = Dataset.from_dict({"text": X2, "label": Y2})
+
+    def tokenize_function(example):
+        return bert_tokenizer(example["text"], padding="max_length", truncation=True)
+
+    X1_bert_tokenized = X1_df.map(tokenize_function, batched=True)
+    X2_bert_tokenized = X2_df.map(tokenize_function, batched=True)
 
     # for RNN
     keras_tokenizer.fit_on_texts(X.copy())
@@ -133,6 +146,11 @@ if __name__ == "__main__":
             elif classifier.model_name == "bert":
                 classifier.build_bert_model(bert_tokenize_max_length)
                 bert_train(classifier.model, X1_input_ids, X1_attention_masks, Y1)
+            elif classifier.model_name == "bert2":
+                bert2_trainer = bert2_build_trainer(
+                    classifier.model, classifier.model_path
+                )
+                bert2_trainer.train()
             elif classifier.model_name == "rnn":
                 classifier.build_rnn_model(X1_sequence_max_length)
                 rnn_train(classifier.model, X1_sequences_padded, Y1)
@@ -152,6 +170,8 @@ if __name__ == "__main__":
             Y2_pred = keras_evaluate(classifier.model, X2_sequences_padded)
         elif classifier.model_name == "bert":
             Y2_pred = bert_evaluate(classifier.model, bert_tokenizer, X2)
+        elif classifier.model_name == "bert2":
+            Y2_pred = bert_evaluate(classifier.model, bert_tokenizer, X2.tolist())
         else:
             Y2_pred = evaluate(classifier.model, X2_tfidf_transformed)
 
