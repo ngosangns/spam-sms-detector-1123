@@ -1,39 +1,17 @@
 import ipaddress
-import os
-import pickle
 import re
 import socket
 import urllib.request
 from datetime import date
 from urllib.parse import urlparse
 
-import numpy as np
-import pandas as pd
 import requests
 import whois
 from bs4 import BeautifulSoup
-from catboost import CatBoostClassifier as CatBoost
 from googlesearch import search
-from imblearn.over_sampling import RandomOverSampler
-from sklearn.ensemble import (
-    GradientBoostingClassifier as SklearnGradientBoostingClassifier,
-)
-from sklearn.ensemble import (
-    RandomForestClassifier as SklearnRandomForestClassifier,
-)
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import (
-    GridSearchCV,
-    train_test_split,
-)
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier as MLP
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier as SKLearnDecisionTree
 
 
-class FeatureExtraction:
+class URLFeatureExtractor:
     features = []
 
     def __init__(self, url):
@@ -564,146 +542,3 @@ class FeatureExtraction:
 
     def getFeaturesList(self):
         return self.features
-
-
-class URLClassifier:
-    """
-    Lớp URLClassifier dùng để phân loại tin nhắn URL thành spam hoặc không spam.
-    Attributes:
-        model_name (str): Tên của mô hình.
-        model_dir (str): Thư mục lưu trữ kết quả.
-        model_path (str): Đường dẫn đến file lưu trữ mô hình.
-        model (sklearn model): Mô hình học máy dùng để phân loại.
-    Methods:
-        __init__(model_name, model_dir):
-            Khởi tạo đối tượng URLClassifier với tên mô hình và thư mục kết quả.
-        load_data(directory):
-            Tải dữ liệu URL từ file CSV chỉ định và trả về danh sách tin nhắn và nhãn tương ứng.
-        balance_dataset(X_train, y_train):
-            Cân bằng tập dữ liệu huấn luyện bằng cách sử dụng kỹ thuật oversampling.
-        preprocess_data(url_data, labels):
-            Tiền xử lý dữ liệu URL và nhãn, bao gồm chia tập dữ liệu.
-        train_model(X_train, y_train):
-            Huấn luyện mô hình với dữ liệu huấn luyện.
-        evaluate_model(X_test, y_test):
-            Đánh giá mô hình với dữ liệu kiểm tra và trả về nhãn thực tế và nhãn dự đoán.
-        save_model():
-            Lưu mô hình đã huấn luyện vào file.
-        load_model():
-            Tải mô hình từ file.
-    """
-
-    def __init__(self, model_name, model_dir):
-        self.model_name = model_name
-        self.model_dir = model_dir
-        self.model_path = os.path.join(
-            self.model_dir, f"url-{self.model_name}-model.pkl"
-        )
-        self.model = None
-
-    def load_data(self, csv_path):
-        data = pd.read_csv(csv_path)
-        data = data.drop(["Index"], axis=1)  # Drop the Index column
-
-        url_data = data.drop(["class"], axis=1)
-        label = data["class"]
-
-        return url_data, label
-
-    def balance_dataset(self, X_train, y_train):
-        oversampler = RandomOverSampler(random_state=42)
-        X_resampled, y_resampled = oversampler.fit_resample(X_train, y_train)
-        return X_resampled, y_resampled
-
-    def preprocess_data(self, url_data, labels):
-        X_train, X_test, y_train, y_test = train_test_split(
-            url_data, labels, test_size=0.2, random_state=42
-        )
-
-        return X_train, y_train, X_test, y_test
-
-    def train_model(self, X_train, y_train):
-        self.model.fit(X_train, y_train)
-
-    def evaluate_model(self, X_test, y_test):
-        y_pred = self.model.predict(X_test)
-
-        # print(f'Accuracy: {accuracy_score(y_test, y_pred)}')
-        # print(classification_report(y_test, y_pred))
-
-        return y_test, y_pred
-
-    def predict(self, url):
-        obj = FeatureExtraction(url)
-        extracted_features = np.array(obj.getFeaturesList()).reshape(1, 30)
-
-        # y_pro_phishing = self.model.predict_proba(obj)[0, 0]
-        # y_pro_non_phishing = self.model.predict_proba(obj)[0, 1]
-
-        return self.model.predict(extracted_features)[0]  # 1 is safe, -1 is unsafe
-
-    def save_model(self):
-        with open(self.model_path, "wb") as f:
-            pickle.dump((self.model), f)
-
-    def load_model(self):
-        with open(self.model_path, "rb") as f:
-            self.model = pickle.load(f)
-
-
-class SVMClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("svm", model_dir)
-
-        # defining parameter range
-        param_grid = {"gamma": [0.1], "kernel": ["rbf", "linear"]}
-
-        self.model = GridSearchCV(SVC(), param_grid)
-
-
-class NaiveBayesClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("naive-bayes", model_dir)
-        self.model = GaussianNB()
-
-
-class RandomForestClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("random-forest", model_dir)
-        self.model = SklearnRandomForestClassifier(n_estimators=10)
-
-
-class LogisticRegressionClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("logistic-regression", model_dir)
-        self.model = LogisticRegression()
-
-
-class KNNClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("knn", model_dir)
-        self.model = KNeighborsClassifier(n_neighbors=1)
-
-
-class GradientBoostingClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("gradient-boosting", model_dir)
-        self.model = SklearnGradientBoostingClassifier(max_depth=4, learning_rate=0.7)
-
-
-class DecisionTreeClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("decision-tree", model_dir)
-        self.model = SKLearnDecisionTree(max_depth=30)
-
-
-class CatBoostClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("catboost", model_dir)
-        self.model = CatBoost(learning_rate=0.1)
-
-
-class MLPClassifier(URLClassifier):
-    def __init__(self, model_dir):
-        super().__init__("mlp", model_dir)
-        self.model = MLP()

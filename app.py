@@ -1,39 +1,21 @@
 import os
+import numpy as np
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
-from dotenv import load_dotenv
-from sms.models import (
-    SMSSVMClassifier,
-    # BERTClassifier,
-    # NaiveBayesClassifier,
-    # RandomForestClassifier,
-    # LogisticRegressionClassifier,
-    # KNNClassifier,
-    # GradientBoostingClassifier,
-)
-from sms.utils import predict
-from url.models import (
-    # BERTClassifier,
-    # SVMClassifier,
-    # NaiveBayesClassifier,
-    # RandomForestClassifier,
-    # LogisticRegressionClassifier,
-    # KNNClassifier,
-    GradientBoostingClassifier as URLGradientBoostingClassifier,
+
+from models.sms_ml_svm_classifier import SingletonSMSMLSVMClassifier
+from models.url_feature_extractor import URLFeatureExtractor
+from models.url_ml_gradient_boosting_classifier import (
+    SingletonURLMLGradientBoostingClassifier,
 )
 
-load_dotenv()
-
-RESULT_DIR = os.getenv("RESULT_DIR")
-STATIC_PATH = os.getenv("STATIC_PATH")
-
-sms_model = SMSSVMClassifier(RESULT_DIR)
+sms_model = SingletonSMSMLSVMClassifier("./trained_models")
 sms_model.load()
 
-url_model = URLGradientBoostingClassifier(RESULT_DIR)
-url_model.load_model()
+url_model = SingletonURLMLGradientBoostingClassifier("./trained_models")
+url_model.load()
 
 app = FastAPI()
 
@@ -48,7 +30,7 @@ async def classify_sms(request: SMSRequest):
     if not sms:
         raise HTTPException(status_code=400, detail="No SMS provided")
 
-    prediction = predict(sms_model.model, sms)
+    prediction = sms_model.predict(np.array([sms]))
     sms_type = "spam" if prediction[0] == 1 else "ham"
 
     return JSONResponse(content={"type": sms_type})
@@ -64,7 +46,13 @@ async def classify_url(request: URLRequest):
     if not url:
         raise HTTPException(status_code=400, detail="No URL provided")
 
-    prediction = url_model.predict(url)
+    obj = URLFeatureExtractor(url)
+    extracted_features = np.array(obj.getFeaturesList()).reshape(1, 30).tolist()
+
+    # y_pro_phishing = self.model.predict_proba(obj)[0, 0]
+    # y_pro_non_phishing = self.model.predict_proba(obj)[0, 1]
+
+    prediction = url_model.predict(extracted_features)[0]
     url_type = "spam" if prediction == -1 else "ham"
 
     return JSONResponse(content={"type": url_type})
@@ -72,10 +60,10 @@ async def classify_url(request: URLRequest):
 
 @app.get("/{path:path}")
 async def serve_static(path: str = ""):
-    full_path = os.path.join(STATIC_PATH, path)
+    full_path = os.path.join("./web/dist", path)
     if path and os.path.exists(full_path):
         return FileResponse(full_path)
-    return FileResponse(os.path.join(STATIC_PATH, "index.html"))
+    return FileResponse(os.path.join("./web/dist", "index.html"))
 
 
 if __name__ == "__main__":
