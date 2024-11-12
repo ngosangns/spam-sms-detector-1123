@@ -91,3 +91,11 @@ fastapi dev app.py
 - https://docshare.tips/vietnamese-text-clasification_5765770db6d87fd2a78b4d82.html
 - https://vnopenai.github.io/ai-doctor/nlp/vn-accent/n-grams
 - https://github.com/sonlam1102/vispamdetection
+
+## URL
+
+### Datasets
+
+### Refs
+
+-

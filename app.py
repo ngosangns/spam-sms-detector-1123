@@ -11,10 +11,12 @@ from models.url_ml_gradient_boosting_classifier import (
     SingletonURLMLGradientBoostingClassifier,
 )
 
-sms_model = SingletonSMSMLSVMClassifier("./trained_models")
+model_dir = "./trained_models"
+
+sms_model = SingletonSMSMLSVMClassifier(model_dir)
 sms_model.load()
 
-url_model = SingletonURLMLGradientBoostingClassifier("./trained_models")
+url_model = SingletonURLMLGradientBoostingClassifier(model_dir)
 url_model.load()
 
 app = FastAPI()
@@ -49,21 +51,21 @@ async def classify_url(request: URLRequest):
     obj = URLFeatureExtractor(url)
     extracted_features = np.array(obj.getFeaturesList()).reshape(1, 30).tolist()
 
-    # y_pro_phishing = self.model.predict_proba(obj)[0, 0]
-    # y_pro_non_phishing = self.model.predict_proba(obj)[0, 1]
+    url_type = (
+        "spam" if url_model.predict(np.array(extracted_features))[0] == -1 else "ham"
+    )
+    spam_percent = url_model.predictPercent(np.array(extracted_features))
 
-    prediction = url_model.predict(extracted_features)[0]
-    url_type = "spam" if prediction == -1 else "ham"
-
-    return JSONResponse(content={"type": url_type})
+    return JSONResponse(content={"type": url_type, "spam_percent": spam_percent})
 
 
 @app.get("/{path:path}")
 async def serve_static(path: str = ""):
-    full_path = os.path.join("./web/dist", path)
+    dist_path = "./spam-detector-web/dist/spam-detector-web/browser"
+    full_path = os.path.join(dist_path, path)
     if path and os.path.exists(full_path):
         return FileResponse(full_path)
-    return FileResponse(os.path.join("./web/dist", "index.html"))
+    return FileResponse(os.path.join(dist_path, "index.html"))
 
 
 if __name__ == "__main__":
