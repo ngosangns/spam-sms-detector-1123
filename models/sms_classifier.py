@@ -16,6 +16,11 @@ class SMSClassifier:
     def predict(self, X: np.ndarray) -> np.ndarray[int]:
         pass
 
+    def predict_percent(
+        self, X_vectorized
+    ) -> np.ndarray[float]:  # 1.0 is 100% phishing, 0.0 is 100% ham
+        pass
+
     def save(self):
         pass
 

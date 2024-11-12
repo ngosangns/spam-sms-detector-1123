@@ -77,6 +77,17 @@ class SMSRNNClassifier(SMSClassifier):
         )
         return np.array([1 if i > 0.5 else 0 for i in Y_pred])
 
+    def predict_percent(
+        self, X: np.ndarray, batch_size: int = 128, verbose=1
+    ) -> np.ndarray[float]:
+        X_sequences = self.vectorizer.texts_to_sequences(X.copy())
+        X_sequences_padded = pad_sequences(X_sequences, maxlen=self.sequence_max_length)
+
+        Y_pred = self.model.predict(
+            X_sequences_padded, batch_size=batch_size, verbose=verbose
+        )
+        return Y_pred[:, 0]
+
     def save(self):
         with open(self.model_path, "wb") as f:
             pickle.dump(self.model, f)

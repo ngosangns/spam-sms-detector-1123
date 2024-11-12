@@ -4,8 +4,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
-
-from models.sms_ml_svm_classifier import SingletonSMSMLSVMClassifier
+from models.sms_rnn_classifier import SingletonSMSRNNClassifier
 from models.url_feature_extractor import URLFeatureExtractor
 from models.url_ml_gradient_boosting_classifier import (
     SingletonURLMLGradientBoostingClassifier,
@@ -13,7 +12,7 @@ from models.url_ml_gradient_boosting_classifier import (
 
 model_dir = "./trained_models"
 
-sms_model = SingletonSMSMLSVMClassifier(model_dir)
+sms_model = SingletonSMSRNNClassifier(model_dir)
 sms_model.load()
 
 url_model = SingletonURLMLGradientBoostingClassifier(model_dir)
@@ -32,10 +31,15 @@ async def classify_sms(request: SMSRequest):
     if not sms:
         raise HTTPException(status_code=400, detail="No SMS provided")
 
-    prediction = sms_model.predict(np.array([sms]))
-    sms_type = "spam" if prediction[0] == 1 else "ham"
+    prediction = sms_model.predict(np.array([sms]))[0]
+    spam_percent = sms_model.predict_percent(np.array([sms]))[0]
 
-    return JSONResponse(content={"type": sms_type})
+    return JSONResponse(
+        content={
+            "type": "spam" if prediction == 1 else "ham",
+            "spam_percent": float(spam_percent),
+        }
+    )
 
 
 class URLRequest(BaseModel):
@@ -48,15 +52,16 @@ async def classify_url(request: URLRequest):
     if not url:
         raise HTTPException(status_code=400, detail="No URL provided")
 
-    obj = URLFeatureExtractor(url)
-    extracted_features = np.array(obj.getFeaturesList()).reshape(1, 30).tolist()
+    features = np.array(URLFeatureExtractor(url).getFeaturesList()).reshape(1, 30)
+    prediction = url_model.predict(features)[0]
+    spam_percent = url_model.predict_percent(features)[0]
 
-    url_type = (
-        "spam" if url_model.predict(np.array(extracted_features))[0] == -1 else "ham"
+    return JSONResponse(
+        content={
+            "type": "spam" if prediction == -1 else "ham",
+            "spam_percent": float(spam_percent),
+        }
     )
-    spam_percent = url_model.predictPercent(np.array(extracted_features))
-
-    return JSONResponse(content={"type": url_type, "spam_percent": spam_percent})
 
 
 @app.get("/{path:path}")
@@ -69,5 +74,4 @@ async def serve_static(path: str = ""):
 
 
 if __name__ == "__main__":
-
     uvicorn.run(app, reload=True)

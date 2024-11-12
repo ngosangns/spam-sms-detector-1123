@@ -30,6 +30,11 @@ class SMSMLClassifier(SMSClassifier):
         X_tfidf_transformed = self.vectorizer.transform(X.copy())
         return self.model.predict(X_tfidf_transformed)
 
+    def predict_percent(self, X: np.ndarray) -> np.ndarray[float]:
+        X_tfidf_transformed = self.vectorizer.transform(X.copy())
+        Y_percent_pred = self.model.predict_proba(X_tfidf_transformed)[:, 1]
+        return Y_percent_pred
+
     def save(self):
         with open(self.model_path, "wb") as f:
             pickle.dump(self.model, f)

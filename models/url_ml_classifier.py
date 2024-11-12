@@ -18,10 +18,11 @@ class URLMLClassifier(URLClassifier):
         Y_pred = self.model.predict(X_vectorized)
         return np.array(Y_pred)
 
-    def predictPercent(self, obj):  # 1.0 is 100% phishing, 0.0 is 100% ham
-        # y_pro_non_phishing = self.model.predict_proba(obj)[0, 1]
-        y_pro_phishing = self.model.predict_proba(obj)[0, 0]
-        return y_pro_phishing
+    def predict_percent(
+        self, X_vectorized
+    ) -> np.ndarray[float]:  # 1.0 is 100% phishing, 0.0 is 100% ham
+        Y_percent_pred = self.model.predict_proba(X_vectorized)[:, 0]
+        return Y_percent_pred
 
     def save(self):
         with open(self.model_path, "wb") as f:

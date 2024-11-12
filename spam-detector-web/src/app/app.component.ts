@@ -51,7 +51,7 @@ export class AppComponent {
     })
       .then((response) => response.json())
       .then((data) => {
-        this.showDialog(data.type, parseFloat(data.spam_percent.toFixed(4)));
+        this.showDialog(data.type, parseFloat(data.spam_percent));
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -75,7 +75,7 @@ export class AppComponent {
     })
       .then((response) => response.json())
       .then((data) => {
-        this.showDialog(data.type, parseFloat(data.spam_percent.toFixed(4)));
+        this.showDialog(data.type, parseFloat(data.spam_percent));
       })
       .catch((error) => {
         console.error('Error:', error);

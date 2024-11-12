@@ -14,13 +14,13 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
         <p>
           Phân loại:
           <span class="font-bold" [ngStyle]="{ color: getColor(data.percent) }">
-            {{ data.type === "ham" ? "Thông thường" : "Spam" }}
+            {{ data.type === 'ham' ? 'Thông thường' : 'Spam' }}
           </span>
         </p>
         <p>
           Phần trăm spam:
           <span class="font-bold" [ngStyle]="{ color: getColor(data.percent) }">
-            {{ data.percent * 100 }}%
+            {{ (data.percent * 100).toFixed(2) }}%
           </span>
         </p>
       </div>

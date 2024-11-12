@@ -94,6 +94,14 @@ class SMSLSTMClassifier(SMSClassifier):
         )
         return np.array([1 if i > 0.5 else 0 for i in Y_pred])
 
+    def predict_percent(
+        self, X_vectorized, batch_size: int = 128, verbose=1
+    ) -> np.ndarray[float]:
+        Y_pred = self.model.predict(
+            X_vectorized, batch_size=batch_size, verbose=verbose
+        )
+        return Y_pred[:, 0]
+
     def save(self):
         self.model.save(self.model_path)
         with open(self.vectorizer_path, "wb") as f:

@@ -1,6 +1,7 @@
 # Spam SMS & URL Detector
 
 - python 3.12.7 - pyenv - anaconda3-2024.10-1
+- concurrently (`npm i -g concurrently`)
 
 ## Environment Setup
 

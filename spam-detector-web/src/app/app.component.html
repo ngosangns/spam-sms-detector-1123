@@ -4,12 +4,12 @@
     <form (ngSubmit)="onSMSSubmit()" class="flex flex-col">
       <mat-form-field appearance="fill">
         <mat-label>SMS</mat-label>
-        <textarea
+        <input
           matInput
           [(ngModel)]="sms"
           name="message"
           [disabled]="isSMSLoading"
-        ></textarea>
+        />
       </mat-form-field>
       <button
         mat-raised-button

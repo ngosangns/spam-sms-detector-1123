@@ -58,7 +58,7 @@ if __name__ == "__main__":
         SingletonSMSMLKNNClassifier(MODEL_DIR),
         SingletonSMSMLGradientBoostingClassifier(MODEL_DIR),
         SingletonSMSLSTMClassifier(MODEL_DIR),
-        SingletonSMSBERTClassifier(MODEL_DIR),
+        # SingletonSMSBERTClassifier(MODEL_DIR),
         SingletonSMSRNNClassifier(MODEL_DIR),
     ]
     model_names = [classifier.model_name for classifier in classifiers]
