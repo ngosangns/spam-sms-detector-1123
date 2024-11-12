@@ -14,3 +14,7 @@ mc:
 uc:
 	clear
 	python url_compare.py
+
+tele:
+	clear
+	python tele.py

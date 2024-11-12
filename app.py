@@ -6,16 +6,14 @@ from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from models.sms_rnn_classifier import SingletonSMSRNNClassifier
 from models.url_feature_extractor import URLFeatureExtractor
-from models.url_ml_gradient_boosting_classifier import (
-    SingletonURLMLGradientBoostingClassifier,
-)
+from models.url_ml_catboost_classifier import SingletonURLMLCatBoostClassifier
 
 model_dir = "./trained_models"
 
 sms_model = SingletonSMSRNNClassifier(model_dir)
 sms_model.load()
 
-url_model = SingletonURLMLGradientBoostingClassifier(model_dir)
+url_model = SingletonURLMLCatBoostClassifier(model_dir)
 url_model.load()
 
 app = FastAPI()

@@ -97,6 +97,8 @@ fastapi dev app.py
 
 ### Datasets
 
+- https://www.kaggle.com/datasets/eswarchandt/phishing-website-detector
+
 ### Refs
 
 -
