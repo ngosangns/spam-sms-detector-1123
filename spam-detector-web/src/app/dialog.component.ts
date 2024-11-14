@@ -18,7 +18,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
           </span>
         </p>
         <p>
-          Phần trăm spam:
+          Tỉ lệ spam:
           <span class="font-bold" [ngStyle]="{ color: getColor(data.percent) }">
             {{ (data.percent * 100).toFixed(2) }}%
           </span>

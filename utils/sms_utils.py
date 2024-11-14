@@ -1,5 +1,7 @@
 import re
+import string
 
+import nltk
 import numpy as np
 import pandas as pd
 from models.di import LanStemmer, Lemmatizer, PortStemmer, StopWords
@@ -33,16 +35,26 @@ def text_preprocess(t: str, stop_words, stemmer) -> str:
 
 
 def preprocess_text(text: str, method: str = "porter") -> str:
-    words = re.sub("[^a-zA-Z]", " ", text)
-    words = [
-        word.lower() for word in words.split() if word.lower() not in StopWords().words
-    ]
+    text = nltk.word_tokenize(text)  # Create tokens
+    text = " ".join(text)  # Join tokens
+    text = [
+        char for char in text if char not in string.punctuation
+    ]  # Remove punctuations
+    text = "".join(text)  # Join the leters
+    text = [
+        char for char in text if char not in re.findall(r"[0-9]", text)
+    ]  # Remove Numbers
+    text = "".join(text)  # Join the leters
+    text = [
+        word.lower() for word in text.split() if word.lower() not in StopWords().words
+    ]  # Remove common english words (I, you, we,...)
+    text = " ".join(text)  # Join the leters
 
     if method == "porter":
-        words = [PortStemmer().stemmer.stem(word) for word in words]
+        text = list(map(lambda x: PortStemmer().stemmer.stem(x), text.split()))
     elif method == "lancaster":
-        words = [LanStemmer().stemmer.stem(word) for word in words]
+        text = list(map(lambda x: LanStemmer().stemmer.stem(x), text.split()))
     elif method == "lemmatize":
-        words = [Lemmatizer().lemmatizer.lemmatize(word) for word in words]
+        text = list(map(lambda x: Lemmatizer().lemmatizer.lemmatize(x), text.split()))
 
-    return " ".join(words)
+    return " ".join(text)  # error word

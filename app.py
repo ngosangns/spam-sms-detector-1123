@@ -3,24 +3,13 @@ import numpy as np
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
-from pydantic import BaseModel
-from models.sms_rnn_classifier import SingletonSMSRNNClassifier
+from app_dto import Response, SMSRequest, URLRequest
+from app_models import init_app_models
 from models.url_feature_extractor import URLFeatureExtractor
-from models.url_ml_catboost_classifier import SingletonURLMLCatBoostClassifier
 
-model_dir = "./trained_models"
-
-sms_model = SingletonSMSRNNClassifier(model_dir)
-sms_model.load()
-
-url_model = SingletonURLMLCatBoostClassifier(model_dir)
-url_model.load()
+app_models = init_app_models()
 
 app = FastAPI()
-
-
-class SMSRequest(BaseModel):
-    sms: str
 
 
 @app.post("/sms/classify")
@@ -29,19 +18,15 @@ async def classify_sms(request: SMSRequest):
     if not sms:
         raise HTTPException(status_code=400, detail="No SMS provided")
 
-    prediction = sms_model.predict(np.array([sms]))[0]
-    spam_percent = sms_model.predict_percent(np.array([sms]))[0]
+    prediction = app_models.sms.predict(np.array([sms]))[0]
+    spam_percent = app_models.sms.predict_percent(np.array([sms]))[0]
 
     return JSONResponse(
-        content={
-            "type": "spam" if prediction == 1 else "ham",
-            "spam_percent": float(spam_percent),
-        }
+        content=Response(
+            type="spam" if prediction == 1 else "ham",
+            spam_percent=float(spam_percent),
+        ).to_dict()
     )
-
-
-class URLRequest(BaseModel):
-    url: str
 
 
 @app.post("/url/classify")
@@ -51,14 +36,14 @@ async def classify_url(request: URLRequest):
         raise HTTPException(status_code=400, detail="No URL provided")
 
     features = np.array(URLFeatureExtractor(url).getFeaturesList()).reshape(1, 30)
-    prediction = url_model.predict(features)[0]
-    spam_percent = url_model.predict_percent(features)[0]
+    prediction = app_models.url.predict(features)[0]
+    spam_percent = app_models.url.predict_percent(features)[0]
 
     return JSONResponse(
-        content={
-            "type": "spam" if prediction == -1 else "ham",
-            "spam_percent": float(spam_percent),
-        }
+        content=Response(
+            type="spam" if prediction == -1 else "ham",
+            spam_percent=float(spam_percent),
+        ).to_dict()
     )
 
 

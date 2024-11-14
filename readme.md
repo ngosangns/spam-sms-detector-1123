@@ -43,21 +43,21 @@ python -c "import nltk; nltk.download()"
 ### Production Mode
 
 ```sh
-cd web
-yarn
-yarn build
+cd spam-detector-web
+npm i
+npm run build
 cd ..
 fastapi run app.py
 ```
 
 ### Development Mode
 
-1. Start the front-end file watcher:
+1. Start the front-end build file watcher:
 
 ```sh
-cd web
-yarn
-yarn watch
+cd spam-detector-web
+npm i
+npm run watch
 ```
 
 2. Start the back-end server with live reloading:

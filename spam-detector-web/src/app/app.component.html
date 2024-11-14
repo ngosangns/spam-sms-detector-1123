@@ -9,13 +9,14 @@
           [(ngModel)]="sms"
           name="message"
           [disabled]="isSMSLoading"
+          required
         />
       </mat-form-field>
       <button
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="isSMSLoading"
+        [disabled]="isSMSLoading || sms.length === 0"
       >
         <ng-container *ngIf="!isSMSLoading">Check</ng-container>
         <mat-spinner *ngIf="isSMSLoading" diameter="20"></mat-spinner>
@@ -32,13 +33,14 @@
           [(ngModel)]="url"
           name="message"
           [disabled]="isURLLoading"
+          required
         />
       </mat-form-field>
       <button
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="isURLLoading"
+        [disabled]="isURLLoading || url.length === 0"
       >
         <ng-container *ngIf="!isURLLoading">Check</ng-container>
         <mat-spinner *ngIf="isURLLoading" diameter="20"></mat-spinner>
