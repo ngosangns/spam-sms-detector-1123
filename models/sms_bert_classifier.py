@@ -73,13 +73,16 @@ class SMSBERTClassifier(SMSClassifier):
         trainer.train()
 
     def predict(self, X: np.ndarray) -> np.ndarray[int]:
+        if self.tokenizer is None:
+            self.tokenizer = BertTokenizerFactory().tokenizer
+
         pipeline = TextClassificationPipeline(
             model=self.model,
             tokenizer=self.tokenizer,
             framework="pt",
             device=0 if torch.cuda.is_available() else -1,
         )
-        Y_pred = pipeline(X.tolist())
+        Y_pred = pipeline(X)
         Y_pred = np.array([y["label"] == "LABEL_1" for y in Y_pred])
         return Y_pred
 
