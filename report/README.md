@@ -2,16 +2,22 @@
 
 ## Installation
 
-- Typst: https://github.com/typst/typst
+### Typst
 
-## Edit
+- Repository: [Typst GitHub](https://github.com/typst/typst)
+- MacOS: `brew install typst`
+- Windows: `winget install --id Typst.Typst`
 
-Refer to using VSCode with the Tinymist Typst and LaTeX Workshop extensions.
+## Editing
 
-**Note**: If you are using the LaTeX Workshop extension, run the command `LaTeX Workshop: Refresh all LaTeX viewers` and set LaTeX Workshop as the default opener for `.pdf` files.
+Use VSCode with the _Tinymist Typst_ and _LaTeX Workshop_ extensions for an enhanced editing experience.
 
-To export `.pdf` while watching for file changes:
+### Export to PDF with File Watch
+
+To continuously export the report to a `.pdf` file while monitoring for changes, use the following command:
 
 ```sh
-RUST_BACKTRACE=full typst watch --font-path fonts ./src/main.typ main.pdf
+typst watch --font-path fonts ./src/main.typ main.pdf
 ```
+
+**Note:** If you are using the LaTeX Workshop extension, execute the command `LaTeX Workshop: Refresh all LaTeX viewers` and set LaTeX Workshop as the default viewer for `.pdf` files to automatically see updates.

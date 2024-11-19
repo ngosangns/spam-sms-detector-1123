@@ -25,44 +25,6 @@ Mặc dù mang lại nhiều lợi ích, các hệ thống dựa trên URL và S
 - Malware: URL độc hại có thể dẫn đến việc tải xuống phần mềm độc hại lên thiết bị của người dùng.
 - Spam: Tin nhắn SMS không mong muốn, thường chứa quảng cáo hoặc nội dung lừa đảo.
 
-// 3. Phương pháp học máy truyền thống
-
-//   • Naive Bayes: Một phương pháp phân loại xác suất thường được sử dụng trong phân tích tin nhắn do khả năng đơn giản và hiệu quả cao với văn bản nhỏ.
-//   • Support Vector Machine (SVM): Sử dụng để phân loại tin nhắn thành nhóm “lừa đảo” và “không lừa đảo” với các hyperplane tối ưu.
-//   • K-Nearest Neighbors (KNN): Xác định nhãn của một tin nhắn dựa trên nhãn của các tin nhắn gần kề trong không gian vector.
-//   • Decision Trees và Random Forests: Các phương pháp này tạo ra cây quyết định từ các đặc trưng của văn bản để dự đoán khả năng lừa đảo.
-
-// 4. Phương pháp học sâu (Deep Learning)
-
-//   • Mạng nơ-ron tích chập (CNN): Dùng để trích xuất các đặc trưng không gian từ văn bản. CNN có thể áp dụng để phân loại tin nhắn dựa trên các đặc điểm ngữ cảnh cục bộ.
-//   • Mạng nơ-ron tuần tự (RNN) và LSTM: RNN và LSTM (Long Short-Term Memory) là các kiến trúc phù hợp cho dữ liệu tuần tự như văn bản, giúp ghi nhớ ngữ cảnh dài hạn của câu để phân biệt giữa tin nhắn lừa đảo và không lừa đảo.
-//   • Bi-directional LSTM (BiLSTM): Xử lý văn bản theo cả hai chiều (từ đầu đến cuối và ngược lại) để nắm bắt ngữ cảnh tốt hơn.
-//   • Transformer Models: Các mô hình như BERT (Bidirectional Encoder Representations from Transformers) và GPT (Generative Pre-trained Transformer) đã được chứng minh là hiệu quả trong việc xử lý ngữ nghĩa phức tạp của văn bản. BERT có thể được tinh chỉnh để phân loại tin nhắn lừa đảo bằng cách hiểu ngữ cảnh và ý nghĩa.
-
-// #h3("Phân tích dựa trên học máy")
-
-// Học máy (Machine Learning) sử dụng các thuật toán để phân loại tin nhắn SMS là hợp pháp hoặc lừa đảo dựa trên các đặc trưng đã được trích xuất. Các bước chính bao gồm:
-
-// - Trích xuất đặc trưng: Các đặc trưng quan trọng từ tin nhắn SMS như từ khóa, độ dài tin nhắn, và tần suất xuất hiện của các từ được trích xuất.
-// - Huấn luyện mô hình: Sử dụng các thuật toán học máy như Support Vector Machine (SVM), Decision Tree, hoặc Random Forest để huấn luyện mô hình trên tập dữ liệu đã được gắn nhãn.
-// - Dự đoán: Sử dụng mô hình đã huấn luyện để phân loại các tin nhắn SMS mới.
-
-// #h3("Phân tích dựa trên deep learning")
-
-// Deep learning sử dụng các mạng nơ-ron sâu để phân tích và phân loại tin nhắn SMS. Các kỹ thuật phổ biến bao gồm:
-
-// - Mạng nơ-ron tích chập (CNN): CNN có thể được sử dụng để trích xuất các đặc trưng từ văn bản và phân loại tin nhắn SMS.
-// - Mạng nơ-ron hồi quy (RNN): RNN, đặc biệt là LSTM (Long Short-Term Memory), có khả năng xử lý các chuỗi văn bản dài và phát hiện các mẫu ngữ cảnh trong tin nhắn SMS.
-// - Mô hình Transformer: Các mô hình như BERT (Bidirectional Encoder Representations from Transformers) có thể được sử dụng để phân tích ngữ nghĩa và ngữ cảnh của tin nhắn SMS.
-
-// #h3("Phân tích dựa trên xử lý ngôn ngữ tự nhiên (NLP)")
-
-// NLP sử dụng các kỹ thuật để phân tích và hiểu ngôn ngữ tự nhiên trong tin nhắn SMS. Các phương pháp bao gồm:
-
-// - Phân tích từ vựng: Sử dụng các kỹ thuật như TF-IDF (Term Frequency-Inverse Document Frequency) để xác định tầm quan trọng của các từ trong tin nhắn.
-// - Phân tích ngữ nghĩa: Sử dụng các mô hình ngôn ngữ như Word2Vec hoặc GloVe để biểu diễn các từ dưới dạng vector và phân tích ngữ nghĩa của chúng.
-// - Phân tích cú pháp: Sử dụng các công cụ phân tích cú pháp để hiểu cấu trúc ngữ pháp của tin nhắn và phát hiện các mẫu ngữ pháp đáng ngờ.
-
 #h1("Đề xuất thiết kế hệ thống")
 
 Bài này trình bày đề xuất thiết kế một hệ thống phát hiện lừa đảo trong tin nhắn SMS và URL, sử dụng các kỹ thuật học máy và xử lý ngôn ngữ tự nhiên. Hệ thống này nhằm mục đích bảo vệ người dùng khỏi các mối đe dọa trực tuyến bằng cách phân tích nội dung, ngữ cảnh và các đặc điểm khác của tin nhắn và URL để xác định các dấu hiệu lừa đảo.
@@ -154,9 +116,9 @@ Phân tích tin nhắn SMS để phát hiện lừa đảo là một ứng dụn
 - TF-IDF (Term Frequency-Inverse Document Frequency): Đánh trọng số từ dựa trên tần suất xuất hiện trong một tin nhắn so với toàn bộ tập dữ liệu.
 - Word Embeddings: Sử dụng các phương pháp như Word2Vec, GloVe, hoặc FastText để chuyển đổi từ ngữ thành các vector không gian liên tục, biểu diễn ngữ nghĩa tốt hơn.
 
-// #h3("Phát hiện bất thường (Anomaly Detection)")
+#h3("Phát hiện bất thường (Anomaly Detection)")
 
-// Sử dụng các kỹ thuật học không giám sát (unsupervised learning) để phát hiện các mẫu bất thường trong tin nhắn, chẳng hạn như tần suất từ khóa, cấu trúc câu khác lạ, hoặc hành vi không phổ biến.
+Sử dụng các kỹ thuật học không giám sát (unsupervised learning) để phát hiện các mẫu bất thường trong tin nhắn, chẳng hạn như tần suất từ khóa, cấu trúc câu khác lạ, hoặc hành vi không phổ biến.
 
 #h3("Kỹ thuật nâng cao")
 
@@ -168,20 +130,7 @@ Phân tích tin nhắn SMS để phát hiện lừa đảo là một ứng dụn
 - Dữ liệu không cân bằng: Số lượng tin nhắn lừa đảo thường ít hơn so với tin nhắn thông thường, gây ra sự mất cân bằng dữ liệu. Các kỹ thuật như oversampling, undersampling hoặc sử dụng các thuật toán đặc biệt như XGBoost có thể giải quyết vấn đề này.
 - Thay đổi hành vi lừa đảo: Các kẻ tấn công liên tục thay đổi chiến thuật, nên mô hình cần được cập nhật thường xuyên bằng cách huấn luyện lại với dữ liệu mới.
 
-#h2("Xây dựng mô hình học máy")
-
-Quy trình huấn luyện mô hình học máy bao gồm các bước sau:
-
-1. Chuẩn bị dữ liệu: Thu thập và chuẩn bị một tập dữ liệu lớn các tin nhắn SMS và URL đã được gắn nhãn là hợp pháp hoặc lừa đảo. Tập dữ liệu này được chia thành tập huấn luyện, tập kiểm tra và tập xác thực.
-2. Lựa chọn mô hình: Lựa chọn một hoặc nhiều mô hình học máy phù hợp cho bài toán phân loại, chẳng hạn như máy vectơ hỗ trợ (SVM), cây quyết định, hoặc mạng nơ-ron.
-3. Huấn luyện mô hình: Huấn luyện mô hình trên tập dữ liệu huấn luyện, sử dụng các kỹ thuật tối ưu hóa để cải thiện hiệu suất của mô hình.
-4. Đánh giá mô hình: Đánh giá hiệu suất của mô hình trên tập dữ liệu kiểm tra và tập xác thực, sử dụng các chỉ số đánh giá như độ chính xác, độ phủ, F1-score.
-5. Điều chỉnh siêu tham số: Điều chỉnh các siêu tham số của mô hình để tối ưu hóa hiệu suất.
-6. Triển khai mô hình: Triển khai mô hình đã được huấn luyện vào hệ thống để phân loại tin nhắn SMS và URL trong thời gian thực.
-
-Quá trình này được lặp lại và cải tiến liên tục để đảm bảo hiệu suất và độ chính xác của hệ thống. Việc sử dụng các kỹ thuật học máy tiên tiến và dữ liệu huấn luyện chất lượng cao là yếu tố quan trọng để xây dựng một hệ thống phát hiện lừa đảo hiệu quả. Hệ thống cũng được thiết kế để dễ dàng cập nhật và bảo trì, cho phép tích hợp các mô hình và thuật toán mới trong tương lai. Việc theo dõi và đánh giá hiệu suất hệ thống thường xuyên là cần thiết để đảm bảo hệ thống hoạt động hiệu quả và đáp ứng được các yêu cầu bảo mật.
-
-#h2("Đánh giá, lựa chọn và huấn luyện mô hình")
+#h2("Đánh giá mô hình")
 
 #h3("Support Vector Machine (SVM)")
 
@@ -238,7 +187,7 @@ Giao diện người dùng được thiết kế đơn giản và dễ sử dụ
 - Hiển thị form nhập văn bản để người dùng nhập tin nhắn SMS hoặc URL cần phân tích.
 - Hiển thị kết quả phân tích, bao gồm xác định tin nhắn hoặc URL là hợp pháp hoặc lừa đảo, và các thông tin chi tiết về các đặc điểm đáng ngờ.
 
-#h1("Triển khai hệ thống phân loại")
+#h1("Huấn luyện và triển khai mô hình phân loại")
 
 #h2("Thu thập và xử lý dữ liệu huấn luyện")
 
@@ -306,7 +255,7 @@ Với SVM, ta có thể thử điều chỉnh các siêu tham số như loại k
 
 #img(
   "./svm-after-optimize.png",
-  cap: "Hiệu suất của mô hình SVM tăng mạnh sau khi tinh chỉnh siêu tham số. Accuracy tăng từ 99.07% lên 99.51%",
+  cap: "Hiệu suất mô hình SVM tăng mạnh sau khi tinh chỉnh siêu tham số",
   width: 100%,
 )
 
@@ -365,9 +314,7 @@ Giao diện người dùng được phát triển bằng framework Angular và F
 
 #h1("Kết luận")
 
-#h2("Tóm tắt kết quả")
-
-#h3("Tóm tắt các thành tựu của dự án và những điểm nổi bật của ứng dụng")
+#h2("Các thành tựu và những điểm nổi bật")
 
 Trong quá trình thực hiện dự án này, tôi đã đạt được nhiều thành tựu quan trọng. Hệ thống phát hiện lừa đảo trong tin nhắn SMS và URL đã được phát triển và triển khai thành công, sử dụng các kỹ thuật học máy và xử lý ngôn ngữ tự nhiên tiên tiến. Các điểm nổi bật của hệ thống bao gồm:
 
@@ -375,7 +322,7 @@ Trong quá trình thực hiện dự án này, tôi đã đạt được nhiều
 - Khả năng mở rộng: Hệ thống được thiết kế theo kiến trúc modular, cho phép dễ dàng mở rộng và tích hợp các mô hình và thuật toán mới trong tương lai.
 - Giao diện người dùng thân thiện: Giao diện người dùng được phát triển đơn giản và dễ sử dụng, cho phép người dùng dễ dàng tương tác với hệ thống và xem kết quả phân tích.
 
-#h3("Thách thức và hướng phát triển")
+#h2("Thách thức và hướng phát triển")
 
 Việc phát hiện lừa đảo trong tin nhắn SMS vẫn còn nhiều thách thức, bao gồm:
 
@@ -389,19 +336,15 @@ Các hướng phát triển trong tương lai bao gồm:
 - Sử dụng phân tích hành vi nâng cao để xác định các mẫu hoạt động đáng ngờ, giúp cải thiện độ chính xác và hiệu quả của hệ thống.
 - Hợp tác giữa các nhà cung cấp dịch vụ, các cơ quan chính phủ và các nhà nghiên cứu để chia sẻ thông tin và phát triển các biện pháp bảo mật hiệu quả hơn, tạo ra một môi trường an toàn hơn cho người dùng.
 
-#h3("Đề xuất các phương pháp nâng cao độ chính xác của mô hình")
+#h2("Đề xuất các phương pháp nâng cao độ chính xác của mô hình")
 
 Để nâng cao độ chính xác của mô hình, tôi đề xuất nghiên cứu và áp dụng các kỹ thuật học máy tiên tiến, bao gồm:
 
 - Sử dụng các mô hình học sâu như Transformer và các biến thể của nó để cải thiện khả năng hiểu ngữ cảnh và ngữ nghĩa của tin nhắn.
 - Áp dụng các kỹ thuật tăng cường dữ liệu để tạo ra thêm các mẫu huấn luyện, giúp mô hình học tốt hơn từ dữ liệu đa dạng.
 
-#h3("Ứng dụng cho các nền tảng khác")
+#h2("Ứng dụng cho các nền tảng khác")
 
 Ngoài việc phát hiện lừa đảo trong tin nhắn SMS và URL, hệ thống có thể được mở rộng để ứng dụng cho các nền tảng khác như email, mạng xã hội và các ứng dụng nhắn tin khác. Điều này sẽ giúp bảo vệ người dùng trên nhiều nền tảng khác nhau, đảm bảo an toàn và bảo mật thông tin cá nhân.
 
 Việc mở rộng ứng dụng cho các nền tảng khác cũng đòi hỏi nghiên cứu và phát triển thêm các kỹ thuật phân tích và mô hình học máy phù hợp với từng nền tảng, đảm bảo hiệu suất và độ chính xác cao trong việc phát hiện lừa đảo.
-
-
-#h2("Cảm ơn")
-#h3("Lời cảm ơn đến những người đã hỗ trợ trong quá trình thực hiện đồ án")

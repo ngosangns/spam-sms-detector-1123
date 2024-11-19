@@ -140,5 +140,11 @@
     par("")
   }
 
+  show bibliography: it => {
+    block(inset: (top: (textSize)))
+    set text(lang: "vi", region: "VN")
+    it
+  }
+
   body
 }

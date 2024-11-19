@@ -1,10 +1,10 @@
-from models.sms_ml_random_forest_classifier import SingletonSMSMLRandomForestClassifier
+from models.sms_ml_svm_classifier import SingletonSMSMLSVMClassifier
 from models.url_ml_catboost_classifier import SingletonURLMLCatBoostClassifier
 
 
 class AppModels:
     def __init__(self, model_dir):
-        self.sms = SingletonSMSMLRandomForestClassifier(model_dir)
+        self.sms = SingletonSMSMLSVMClassifier(model_dir)
         self.url = SingletonURLMLCatBoostClassifier(model_dir)
         self.sms.load()
         self.url.load()
