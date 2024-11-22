@@ -312,6 +312,10 @@ Giao diện người dùng được phát triển bằng framework Angular và F
 #img("./app-gui.png", cap: "Giao diện người dùng của ứng dụng", width: 70%)
 #img("./app-gui-noti.png", cap: "Thông báo kết quả phân loại tin nhắn SMS", width: 70%)
 
+Ngoài ra, tôi còn phát triển thêm chatbot trên nền tảng Telegram, cho phép người dùng gửi tin nhắn và nhận kết quả phân loại trực tiếp từ bot:
+
+#img("./telegram-bot.png", cap: "Chatbot phân loại tin nhắn SMS trên Telegram", width: 70%)
+
 #h1("Kết luận")
 
 #h2("Các thành tựu và những điểm nổi bật")

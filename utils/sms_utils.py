@@ -58,3 +58,22 @@ def preprocess_text(text: str, method: str = "porter") -> str:
         text = list(map(lambda x: Lemmatizer().lemmatizer.lemmatize(x), text.split()))
 
     return " ".join(text)  # error word
+
+
+def detect_general_phone_number(text):
+    phone_pattern = re.compile(
+        r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}\b"
+    )
+    return phone_pattern.finditer(text)
+
+
+def detect_email_addresses(text):
+    email_pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+    return email_pattern.finditer(text)
+
+
+def detect_urls(text):
+    url_pattern = re.compile(
+        r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+    )
+    return url_pattern.finditer(text)

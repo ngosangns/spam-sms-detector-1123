@@ -2,9 +2,12 @@ import os
 import pickle
 
 import numpy as np
+from scipy import sparse
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 from models.di import TfidfVectorizerFactory
 from models.sms_classifier import SMSClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer
+from utils.sms_utils import detect_email_addresses, detect_general_phone_number
 
 
 class SMSMLClassifier(SMSClassifier):
@@ -16,22 +19,44 @@ class SMSMLClassifier(SMSClassifier):
             self.model_dir, f"sms-{self.model_name}-vectorizer.pkl"
         )
 
+    def get_phone_and_email_features(self, X: np.ndarray) -> np.ndarray:  # noqa: F821
+        phone_feature = np.array(
+            [
+                1 if next(detect_general_phone_number(text), None) is not None else 0
+                for text in X
+            ]
+        )
+        email_feature = np.array(
+            [
+                1 if next(detect_email_addresses(text), None) is not None else 0
+                for text in X
+            ]
+        )
+        return np.hstack((phone_feature.reshape(-1, 1), email_feature.reshape(-1, 1)))
+
     def train(self, X: np.ndarray, Y: np.ndarray) -> None:
         # vectorize
         if self.vectorizer is None:
             self.vectorizer = TfidfVectorizerFactory().vectorizer
         self.vectorizer.fit(X.copy())
         X_tfidf_transformed = self.vectorizer.transform(X.copy())
+        email_phone_features = self.get_phone_and_email_features(X)
+        X_tfidf_transformed = sparse.hstack([email_phone_features, X_tfidf_transformed])
 
         # train
         self.model.fit(X_tfidf_transformed, Y)
 
     def predict(self, X: np.ndarray) -> np.ndarray[int]:
         X_tfidf_transformed = self.vectorizer.transform(X.copy())
+        email_phone_features = self.get_phone_and_email_features(X)
+        X_tfidf_transformed = sparse.hstack([email_phone_features, X_tfidf_transformed])
+
         return self.model.predict(X_tfidf_transformed)
 
     def predict_percent(self, X: np.ndarray) -> np.ndarray[float]:
         X_tfidf_transformed = self.vectorizer.transform(X.copy())
+        email_phone_features = self.get_phone_and_email_features(X)
+        X_tfidf_transformed = sparse.hstack([email_phone_features, X_tfidf_transformed])
         Y_percent_pred = self.model.predict_proba(X_tfidf_transformed)[:, 1]
         return Y_percent_pred
 
