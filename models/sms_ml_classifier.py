@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from models.di import TfidfVectorizerFactory
 from models.sms_classifier import SMSClassifier
 from utils.sms_utils import detect_email_addresses, detect_general_phone_number
+from utils.utils import create_dirpath_if_not_exists
 
 
 class SMSMLClassifier(SMSClassifier):
@@ -61,6 +62,8 @@ class SMSMLClassifier(SMSClassifier):
         return Y_percent_pred
 
     def save(self):
+        create_dirpath_if_not_exists(self.model_path)
+        create_dirpath_if_not_exists(self.vectorizer_path)
         with open(self.model_path, "wb") as f:
             pickle.dump(self.model, f)
         with open(self.vectorizer_path, "wb") as f:

@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split
 
 from models.di import SingletonMeta, TextVectorizationFactory
 from models.sms_ml_classifier import SMSClassifier
+from utils.utils import create_dirpath_if_not_exists
 
 
 class SMSLSTMClassifier(SMSClassifier):
@@ -101,6 +102,8 @@ class SMSLSTMClassifier(SMSClassifier):
         return Y_pred[:, 0]
 
     def save(self):
+        create_dirpath_if_not_exists(self.model_path)
+        create_dirpath_if_not_exists(self.vectorizer_path)
         self.model.save(self.model_path)
         with open(self.vectorizer_path, "wb") as f:
             pickle.dump(self.vectorizer, f)

@@ -1,11 +1,16 @@
 # Spam SMS & URL Detector
 
-- python 3.12.7 - pyenv - anaconda3-2024.10-1
-- concurrently (`npm i -g concurrently`)
+- anaconda3-2024.10-1 (Python 3.12.7): https://docs.anaconda.com/anaconda/install
+
+  - Windows:
+
+    ```sh
+    wget "https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Windows-x86_64.exe" -outfile "./Downloads/Anaconda3-2024.10-1-Windows-x86_64.exe"
+    ```
 
 ## Environment Setup
 
-Create a virtual environment if it doesn’t already exist:
+Create a virtual environment if it doesn't already exist:
 
 ```sh
 python -m venv venv
@@ -13,9 +18,17 @@ python -m venv venv
 
 Activate the virtual environment:
 
-```sh
-source ./venv/bin/activate
-```
+- MacOS / Linux:
+
+  ```sh
+  source ./venv/bin/activate
+  ```
+
+- Windows:
+
+  ```sh
+  cmd -c "./venv/Scripts/activate.bat"
+  ```
 
 ## Install Dependencies
 
@@ -25,45 +38,46 @@ Install Python packages:
 pip install -r requirements.txt
 ```
 
-## Export installed packages versions
-
-```sh
-pip freeze > requirements.txt
-```
-
 ## Download NLTK assets
+
+- MacOS / Linux:
 
 ```sh
 export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
 python -c "import nltk; nltk.download()"
 ```
 
+- Windows:
+
+```sh
+python -c "import nltk; nltk.download()"
+```
+
 ## Running the Web Application
 
-### Production Mode
+### Install Packages
+
+To install the necessary packages, run the following commands:
 
 ```sh
-cd spam-detector-web
-npm i
-npm run build
-cd ..
-fastapi run app.py
+npm install
+npm run install
 ```
 
-### Development Mode
+### Run Application in Production Mode
 
-1. Start the front-end build file watcher:
+To start the application in production mode, use:
 
 ```sh
-cd spam-detector-web
-npm i
-npm run watch
+npm run serve
 ```
 
-2. Start the back-end server with live reloading:
+### Run Application for Development
+
+To start the application in development mode, use:
 
 ```sh
-fastapi dev app.py
+npm run dev
 ```
 
 ## SMS
@@ -98,7 +112,3 @@ fastapi dev app.py
 ### Datasets
 
 - https://www.kaggle.com/datasets/eswarchandt/phishing-website-detector
-
-### Refs
-
--

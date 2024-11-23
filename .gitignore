@@ -3,4 +3,5 @@ venv
 __pycache__
 .idea
 catboost_info
-trained_models/*
+trained_models
+node_modules
