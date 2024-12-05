@@ -11,9 +11,11 @@ from models.url_feature_extractor import URLFeatureExtractor
 import numpy as np
 from app_models import init_app_models
 
+# Bot username: @sms_spam_detector_1123_bot
+BOT_TOKEN = "7546000010:AAFM8d-aHENDBuWPkDGgudy2U9ia0DONap8"
+
 app_models = init_app_models()
 
-BOT_TOKEN = "7546000010:AAFM8d-aHENDBuWPkDGgudy2U9ia0DONap8"
 
 # Set up logging for debugging
 logging.basicConfig(

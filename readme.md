@@ -72,6 +72,12 @@ To start the application in production mode, use:
 npm run serve
 ```
 
+To start the Telegram bot, use:
+
+```sh
+npm run tele
+```
+
 ### Run Application for Development
 
 To start the application in development mode, use:
