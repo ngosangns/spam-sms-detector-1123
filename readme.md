@@ -78,6 +78,8 @@ To start the Telegram bot, use:
 npm run tele
 ```
 
+Bot username: @sms_spam_detector_1123_bot
+
 ### Run Application for Development
 
 To start the application in development mode, use:
