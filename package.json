@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "install": "pip install -r requirements.txt && cd spam-detector-web && npm install",
+        "install": "cd spam-detector-web && npm install",
         "dev-web": "cd spam-detector-web && npm run watch",
         "build-web": "cd spam-detector-web && npm run build",
         "dev-api": "fastapi dev app.py",

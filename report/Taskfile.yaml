@@ -1,0 +1,8 @@
+version: 3
+
+tasks:
+  watch:
+    cmds:
+      - RUST_BACKTRACE=full typst watch --font-path . ./src/main.typ main.pdf
+    # watch:
+    #   - "**/*.typ"

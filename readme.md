@@ -1,19 +1,18 @@
 # Spam SMS & URL Detector
 
 - anaconda3-2024.10-1 (Python 3.12.7): https://docs.anaconda.com/anaconda/install
-
   - Windows:
-
     ```sh
     wget "https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Windows-x86_64.exe" -outfile "./Downloads/Anaconda3-2024.10-1-Windows-x86_64.exe"
     ```
+- uv: `pip install uv`
 
 ## Environment Setup
 
 Create a virtual environment if it doesn't already exist:
 
 ```sh
-python -m venv venv
+uv venv
 ```
 
 Activate the virtual environment:
@@ -35,7 +34,7 @@ Activate the virtual environment:
 Install Python packages:
 
 ```sh
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Download NLTK assets

@@ -1,0 +1,42 @@
+# [build-system]
+# requires = ["setuptools"]
+# build-backend = "setuptools.build_meta"
+
+[project]
+name = "spam-sms-detector-1123"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "catboost==1.2.7",
+    "datasets==3.1.0",
+    "gunicorn==23.0.0",
+    "imbalanced-learn==0.12.4",
+    "imblearn==0.0",
+    "ipykernel==6.29.5",
+    "ipython==8.12.3",
+    "jupyterlab==4.2.5",
+    "kagglehub==0.3.4",
+    "keras==3.6.0",
+    "matplotlib-inline==0.1.7",
+    "matplotlib==3.9.2",
+    "nltk==3.9.1",
+    "numpy==1.26.4",
+    "pandas==2.2.3",
+    "python-telegram-bot==21.7",
+    "scikit-learn==1.5.2",
+    "seaborn==0.13.2",
+    "setuptools==75.3.0",
+    "tensorflow==2.18.0",
+    "tf-keras==2.18.0",
+    "torch==2.5.1",
+    "tqdm==4.67.0",
+    "transformers==4.46.2",
+    "uvicorn==0.32.0",
+    "xgboost==2.1.2",
+    "fastapi[standard]==0.115.5",
+    "whois==1.20240129.2",
+    "googlesearch-python==1.2.5",
+]
+
+[tool.ruff]
+line-length = 88
