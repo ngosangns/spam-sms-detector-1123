@@ -36,6 +36,8 @@ dependencies = [
     "fastapi[standard]==0.115.5",
     "whois==1.20240129.2",
     "googlesearch-python==1.2.5",
+    "wordcloud>=1.9.4",
+    "language-tool-python>=2.8.1",
 ]
 
 [tool.ruff]
