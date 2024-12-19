@@ -1,15 +1,17 @@
 import logging
+
+import numpy as np
 from telegram import Update
 from telegram.ext import (
     Application,
+    CommandHandler,
+    ContextTypes,
     MessageHandler,
     filters,
-    ContextTypes,
-    CommandHandler,
 )
-from models.url_feature_extractor import URLFeatureExtractor
-import numpy as np
-from app_models import init_app_models
+
+from src.app_models import init_app_models
+from src.models.url_feature_extractor import URLFeatureExtractor
 
 # Bot username: @sms_spam_detector_1123_bot
 BOT_TOKEN = "7546000010:AAFM8d-aHENDBuWPkDGgudy2U9ia0DONap8"

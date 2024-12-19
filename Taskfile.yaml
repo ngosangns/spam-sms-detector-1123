@@ -1,0 +1,52 @@
+version: '3'
+
+tasks:
+  api-install:
+    cmds:
+      - uv sync
+      - uv pip install tensorflow
+
+  web-install:
+    cmds:
+      - npm i
+    dir: spam-detector-web
+
+  install:
+    deps: [web-install, api-install]
+    description: "Install all dependencies"
+
+  web-dev:
+    cmds:
+      - npm run watch
+    dir: spam-detector-web
+
+  web-build:
+    cmds:
+      - npm run build
+    dir: spam-detector-web
+
+  api-dev:
+    cmds:
+      - uv run fastapi dev src/app.py
+    env:
+      TF_ENABLE_ONEDNN_OPTS: 0
+
+  api-serve:
+    cmds:
+      - uv run fastapi run src/app.py
+    env:
+      TF_ENABLE_ONEDNN_OPTS: 0
+
+  dev:
+    deps: [web-dev, api-dev]
+    description: "Run development web and API in parallel"
+
+  run:
+    deps: [web-build, api-serve]
+    description: "Build and serve web and API in parallel"
+
+  tele:
+    cmds:
+      - uv run -m tele
+    env:
+      TF_ENABLE_ONEDNN_OPTS: 0

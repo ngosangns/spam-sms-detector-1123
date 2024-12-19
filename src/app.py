@@ -1,13 +1,14 @@
 import os
+
 import numpy as np
+import pandas as pd
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse, FileResponse
-from app_dto import Response, SMSRequest, URLRequest
-from app_models import init_app_models
-from models.url_feature_extractor import URLFeatureExtractor
-import pandas as pd
+from fastapi.responses import FileResponse, JSONResponse
 
+from src.app_dto import Response, SMSRequest, URLRequest
+from src.app_models import init_app_models
+from src.models.url_feature_extractor import URLFeatureExtractor
 from utils.sms_utils import (
     detect_email_addresses,
     detect_general_phone_number,

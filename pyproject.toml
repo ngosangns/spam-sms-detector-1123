@@ -1,11 +1,11 @@
-# [build-system]
-# requires = ["setuptools"]
-# build-backend = "setuptools.build_meta"
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "spam-sms-detector-1123"
 version = "0.1.0"
-requires-python = ">=3.12"
+requires-python = "==3.12.7"
 dependencies = [
     "catboost==1.2.7",
     "datasets==3.1.0",

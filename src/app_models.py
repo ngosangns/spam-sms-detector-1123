@@ -1,5 +1,5 @@
-from models.sms_ml_svm_classifier import SingletonSMSMLSVMClassifier
-from models.url_ml_catboost_classifier import SingletonURLMLCatBoostClassifier
+from src.models.sms_ml_svm_classifier import SingletonSMSMLSVMClassifier
+from src.models.url_ml_catboost_classifier import SingletonURLMLCatBoostClassifier
 
 
 class AppModels:

@@ -1,7 +1,7 @@
 from sklearn.svm import SVC
 
-from models.di import SingletonMeta
-from models.sms_ml_classifier import SMSMLClassifier
+from src.models.di import SingletonMeta
+from src.models.sms_ml_classifier import SMSMLClassifier
 
 
 class SMSMLSVMClassifier(SMSMLClassifier):

@@ -1,91 +1,59 @@
 # Spam SMS & URL Detector
 
-- anaconda3-2024.10-1 (Python 3.12.7): https://docs.anaconda.com/anaconda/install
+- uv:
+
   - Windows:
+
     ```sh
-    wget "https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Windows-x86_64.exe" -outfile "./Downloads/Anaconda3-2024.10-1-Windows-x86_64.exe"
+    winget install --id=astral-sh.uv -e
+    refreshenv # Command Promt
     ```
-- uv: `pip install uv`
 
-## Environment Setup
-
-Create a virtual environment if it doesn't already exist:
-
-```sh
-uv venv
-```
-
-Activate the virtual environment:
-
-- MacOS / Linux:
+- python 3.12.7:
 
   ```sh
-  source ./venv/bin/activate
+  uv python install 3.12.7
+  uv python pin 3.12.7
   ```
 
-- Windows:
+- Taskfile:
 
-  ```sh
-  cmd -c "./venv/Scripts/activate.bat"
-  ```
-
-## Install Dependencies
-
-Install Python packages:
-
-```sh
-uv sync
-```
+  - Windows: `winget install Task.Task`
 
 ## Download NLTK assets
 
-- MacOS / Linux:
-
-```sh
-export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
-python -c "import nltk; nltk.download()"
-```
-
 - Windows:
 
-```sh
-python -c "import nltk; nltk.download()"
-```
+  ```sh
+  uv run python -c "import nltk; nltk.download()"
+  ```
+
+- MacOS / Linux:
+
+  ```sh
+  export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
+  uv run python -c "import nltk; nltk.download()"
+  ```
+
+## Comparing models
+
+Open `./notebooks/sms_compare.ipynb` and `./notebooks/url_compare.ipynb` and run all commands.
 
 ## Running the Web Application
 
 ### Install Packages
 
-To install the necessary packages, run the following commands:
-
-```sh
-npm install
-npm run install
-```
-
-### Run Application in Production Mode
-
-To start the application in production mode, use:
-
-```sh
-npm run serve
-```
-
-To start the Telegram bot, use:
-
-```sh
-npm run tele
-```
-
-Bot username: @sms_spam_detector_1123_bot
+To install the necessary packages, run the following commands: `task install`
 
 ### Run Application for Development
 
-To start the application in development mode, use:
+To start the application in development mode, use: `task dev`
 
-```sh
-npm run dev
-```
+### Run Application in Production Mode
+
+To start the application in production mode, use: `task run`
+
+To start the Telegram bot, use: `task tele` (bot username: `@sms_spam_detector_1123_bot`)
 
 ## SMS
 

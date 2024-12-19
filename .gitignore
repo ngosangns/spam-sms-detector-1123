@@ -5,3 +5,4 @@ __pycache__
 catboost_info
 trained_models
 node_modules
+dist
