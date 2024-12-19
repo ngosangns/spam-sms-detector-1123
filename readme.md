@@ -4,17 +4,17 @@
 
   - Windows:
 
-    ```sh
-    winget install --id=astral-sh.uv -e
-    refreshenv # Command Promt
-    ```
+```sh
+winget install --id=astral-sh.uv -e
+refreshenv # Command Promt
+```
 
 - python 3.12.7:
 
-  ```sh
-  uv python install 3.12.7
-  uv python pin 3.12.7
-  ```
+```sh
+uv python install 3.12.7
+uv python pin 3.12.7
+```
 
 - Taskfile:
 
@@ -24,16 +24,16 @@
 
 - Windows:
 
-  ```sh
-  uv run python -c "import nltk; nltk.download()"
-  ```
+```sh
+uv run python -c "import nltk; nltk.download()"
+```
 
 - MacOS / Linux:
 
-  ```sh
-  export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
-  uv run python -c "import nltk; nltk.download()"
-  ```
+```sh
+export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
+uv run python -c "import nltk; nltk.download()"
+```
 
 ## Comparing models
 
